@@ -15,7 +15,7 @@
   "type": "library",
   "autoload": {
     "psr-4": {
-      "Songyz\\Rabbit": "src/"
+      "Songyz\\Rabbit": "src/rabbit-mq"
     },
     "files": [
     ]
