@@ -1,0 +1,33 @@
+{
+  "name": "songyz/php-rabbit-client",
+  "description": "rabbit连接客户端 只适用laravel lumen 框架",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "rabbit"
+  ],
+  "authors": [
+    {
+      "name": "SongYongZhan",
+      "email": "574482856@qq.com"
+    }
+  ],
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Songyz\\Rabbit": "src/"
+    },
+    "files": [
+    ]
+  },
+  "require-dev": {
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "require": {
+    "php": ">=7.1"
+  },
+  "minimum-stability": "dev"
+}
