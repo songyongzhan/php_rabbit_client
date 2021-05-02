@@ -20,7 +20,7 @@ use Songyz\Rabbit\Service\Rabbit;
 final class RabbitManager
 {
 
-
+    /** @var adfa */
     private static $instance;
 
     /** @var AMQPStreamConnection */

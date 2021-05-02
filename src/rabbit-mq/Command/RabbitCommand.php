@@ -4,7 +4,8 @@ namespace Songyz\Rabbit\Command;
 use Exception;
 use Illuminate\Console\Command;
 use Rabbit\Message\ResponseMessage;
-use Rabbit\RabbitManager;
+use Songyz\Rabbit\RabbitManager;
+use Songyz\Rabbit\Service\Rabbit;
 
 abstract class RabbitCommand extends Command
 {
@@ -12,7 +13,7 @@ abstract class RabbitCommand extends Command
     /** @var string 队列名称 */
     protected $queue;
 
-    /** @var IRabbit */
+    /** @var Rabbit */
     protected $rabbit;
 
     /**
