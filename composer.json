@@ -15,13 +15,15 @@
   "type": "library",
   "autoload": {
     "psr-4": {
-      "Songyz\\Rabbit": "src/rabbit-mq"
+      "Songyz\\Rabbit": "src/rabbit-mq",
+      "Songyz\\Rabbit\\Tests\\": "tests/"
     },
     "files": [
     ]
   },
   "require-dev": {
-    "songyz/common-lib": "^1.0"
+    "songyz/common-lib": "^1.0",
+    "phpunit/phpunit": "^8.5"
   },
   "autoload-dev": {
     "psr-4": {

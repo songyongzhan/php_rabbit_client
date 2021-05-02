@@ -36,13 +36,15 @@ final class RabbitManager
      *
      * @param Config $config
      * @param LoggerInterface|null $logger
-     * @throws ConfigException
-     * @throws Exception
+     * @throws \Exception
      */
-    private function __construct(Config $config = null, LoggerInterface $logger = null)
+    private function __construct(Config $config, LoggerInterface $logger = null)
     {
-
         $this->logger = $logger ?? new NullLogger();
+        //根据传递进来的config 获取里面相关的信息，并建立连接
+        // demo
+
+
 
         $this->connection = AMQPStreamConnection::create_connection($config->getHosts(), $config->getOptions());
     }

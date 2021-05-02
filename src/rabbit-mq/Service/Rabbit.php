@@ -4,9 +4,16 @@ namespace Songyz\Rabbit\Service;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
-use Songyz\Rabbit\Facade\IExchange;
+use Songyz\Rabbit\Exchange\Exchange;
 use Songyz\Rabbit\Message\Message;
 
+/**
+ * rabbit
+ * Class Rabbit
+ * @package Songyz\Rabbit\Service
+ * @author songyongzhan <574482856@qq.com>
+ * @date 2021/5/2 14:46
+ */
 class Rabbit
 {
     /** @var LoggerInterface */
@@ -45,22 +52,13 @@ class Rabbit
      * publish
      *
      * @param Message $message
-     * @param IExchange $exchange
+     * @param Exchange $exchange
      * @param string|null $routingKey
-     * @return IRabbit
-     * @throws ExchangeException
+     * @return Rabbit
      */
-    public function publish(Message $message, IExchange $exchange, string $routingKey = null): IRabbit
+    public function publish(Message $message, Exchange $exchange, string $routingKey = null): Rabbit
     {
-
-        if ($routingKey == null || empty($routingKey)) { //如果消息路由标识为空，将消息分发到所有关注的路由key
-            foreach ($exchange->getRoutingKeys() as $routingKey) {
-                $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
-            }
-        } else {
-            $exchange->isAvailableRoutingKey($routingKey);
-            $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
-        }
+        $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
         return $this;
     }
 
@@ -72,9 +70,6 @@ class Rabbit
      * @param string $queue
      * @param callable|null $callback
      * @return Rabbit
-     *
-     * @author zhanglei <zhanglei8@guahao.com>
-     * @date   2020-07-22 12:57:47
      */
     public function consume(string $queue, callable $callback = null): Rabbit
     {
@@ -94,9 +89,6 @@ class Rabbit
      * @param callable $callback
      * @param string $queue
      * @return callable
-     *
-     * @author zhanglei <zhanglei8@guahao.com>
-     * @date   2020-07-25 15:45:07
      */
     protected function callbackHandle(callable $callback, string $queue): callable
     {
