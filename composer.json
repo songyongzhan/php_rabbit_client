@@ -21,13 +21,18 @@
     ]
   },
   "require-dev": {
+    "songyz/common-lib": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
     }
   },
   "require": {
-    "php": ">=7.1"
+    "php": ">=7.1",
+    "ext-mbstring": "*",
+    "ext-sockets": "*",
+    "phpseclib/phpseclib": "*",
+    "php-amqplib/php-amqplib": "^2.11"
   },
   "minimum-stability": "dev"
 }
