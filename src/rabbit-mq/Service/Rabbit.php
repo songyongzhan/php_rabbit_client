@@ -8,6 +8,7 @@ use phpDocumentor\Reflection\Types\Boolean;
 use Songyz\Rabbit\Exchange\Exchange;
 use Songyz\Rabbit\Message\Message;
 use Psr\Log\LoggerInterface;
+use Songyz\Rabbit\Message\ResponseMessage;
 
 /**
  * rabbit
@@ -177,9 +178,9 @@ class Rabbit
      * @param string $queue
      * @return callable
      */
-    protected function callbackHandle(callable $callback, string $queue): callable
+    protected function callbackHandle(callable $callback, string $queue, int $maxRetry = 3): callable
     {
-        return function (AMQPMessage $message) use ($callback, $queue) {
+        return function (AMQPMessage $message) use ($callback, $queue, $maxRetry) {
             $back = function (callable $callback, ResponseMessage $message, callable $back) {
                 if ($message->isReTry()) { //校验消息是否可重试
                     $message->releaseTry(); //释放一次消息可重试次数
@@ -195,8 +196,8 @@ class Rabbit
                     }
                 }
             };
-
-            $responseMessage = new ResponseMessage($message, $queue);
+            //重试次数 可以在这里去指定
+            $responseMessage = new ResponseMessage($message, $queue, $maxRetry);
             try {
                 $back($callback, $responseMessage, $back);
             } catch (RabbitException $exception) {
