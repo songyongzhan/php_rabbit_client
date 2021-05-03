@@ -2,25 +2,16 @@
 
 namespace Songyz\Rabbit;
 
-use Bhc\Library\Support\System\Env;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Rabbit\Conf\BAProduction;
-use Rabbit\Conf\Development;
-use Rabbit\Conf\PreProduction;
-use Rabbit\Conf\Test;
-use Rabbit\Conf\TXYProduction;
-use Rabbit\Conf\XYProduction;
-use Rabbit\Contracts\IConf;
-use Rabbit\Exception\ConfigException;
 use Songyz\Rabbit\Conf\Config;
 use Songyz\Rabbit\Service\Rabbit;
 
 final class RabbitManager
 {
 
-    /** @var adfa */
+    /** @var RabbitManager */
     private static $instance;
 
     /** @var AMQPStreamConnection */
@@ -41,8 +32,6 @@ final class RabbitManager
     private function __construct(Config $config, LoggerInterface $logger = null)
     {
         $this->logger = $logger ?? new NullLogger();
-        //根据传递进来的config 获取里面相关的信息，并建立连接
-        // demo
 
         $this->connection = AMQPStreamConnection::create_connection($config->getHosts(), $config->getOptions());
     }
@@ -72,13 +61,24 @@ final class RabbitManager
     }
 
     /**
+     * rabbit
+     * 获取mq实例
+     */
+    public function rabbit(): Rabbit
+    {
+        return new Rabbit($this->connection->channel(), $this->logger);
+    }
+
+    /**
      * 获取RabbitManger对象 单例模式
-     * instance
-     *
-     * @param Config $config
-     * @param LoggerInterface $logger
+     * getInstance
+     * @param Config|null $config
+     * @param LoggerInterface|null $logger
      * @return RabbitManager
-     * @throws Exception
+     * @throws \Exception
+     *
+     * @author songyongzhan <574482856@qq.com>
+     * @date 2021/5/3 09:45
      */
     public static function getInstance(Config $config = null, LoggerInterface $logger = null)
     {
@@ -86,16 +86,6 @@ final class RabbitManager
             self::$instance = new RabbitManager($config, $logger);
         }
         return self::$instance;
-    }
-
-
-    /**
-     * rabbit
-     * 获取mq实例
-     */
-    public function rabbit(): Rabbit
-    {
-        return new Rabbit($this->connection->channel(), $this->logger);
     }
 
 
