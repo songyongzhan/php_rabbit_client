@@ -51,6 +51,7 @@ class Rabbit
 
     /**
      * 发送单条消息
+     * 可以开启确认模式
      * publish
      *
      * @param Message $message
@@ -64,29 +65,87 @@ class Rabbit
         Message $message,
         Exchange $exchange,
         string $routingKey = '',
+        bool $confirm = false
+    ): Rabbit {
+        if ($confirm) {
+            $this->logger->info("开启消息确认模式");
+            //开启确认模式 确保消息发送到交换机
+            $this->channel->confirm_select();
+            $this->channel->set_ack_handler(function (AMQPMessage $message) use ($exchange, $routingKey) {
+                $this->logger->info('ack' . $message->getBody());
+                //如果发送到交换机 记录一个日志
+                $this->logger->info('发送到成功:' . $exchange->getName() . '交换机_routingKey:' . $routingKey . ' ack',
+                    [$message]);
+            });
+            $this->channel->set_nack_handler(function (AMQPMessage $message) use ($exchange, $routingKey) {
+                //如果没有发送到交换机 则记录日志
+                $this->logger->info('发送到' . $exchange->getName() . '交换机_routingKey:' . $routingKey . ' nack',
+                    [$message]);
+            });
+        }
+
+        $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
+        //如果开启了确认模式，且非异步确认 则等待3秒钟
+        if ($confirm) {
+            $this->channel->wait_for_pending_acks_returns(3);//set wait time
+        }
+
+        return $this;
+    }
+
+    /**
+     * 发送多条 批量发送并确认
+     * publishMulti
+     * @param $data
+     * @param Exchange $exchange
+     * @param string $routingKey
+     * @param bool $confirm
+     * @param int $maxCount
+     * @return $this
+     *
+     * @author songyongzhan <574482856@qq.com>
+     * @date 2021/5/3 15:05
+     */
+    public function publishMulti(
+        $data,
+        Exchange $exchange,
+        string $routingKey = '',
         bool $confirm = false,
-        bool $asynchronous = false
+        int $maxCount = 50
     ): Rabbit {
 
-        // if ($confirm) {
-        //     //开启确认模式 确保消息发送到交换机
-        //     $this->channel->confirm_select();
-        //     if ($asynchronous) {
-        //         $this->channel->set_ack_handler(function (AMQPMessage $message) {
-        //             echo 'ack' . $message->getBody() . PHP_EOL;
-        //             //如果发送到交换机 记录一个日志
-        //         });
-        //         $this->channel->set_nack_handler(function (AMQPMessage $message) {
-        //             echo 'nack' . $message->getBody() . PHP_EOL;
-        //             //如果没有发送到交换机 则记录日志
-        //         });
-        //     }
-        // }
-        $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
-        //如果开启了确认模式，且非异步确认 则等待
-        // if ($confirm && !$asynchronous) {
-        //     $this->channel->wait_for_pending_acks_returns(5);//set wait time
-        // }
+        if ($confirm) {
+            $this->logger->info("开启批量发送消息确认模式");
+            //开启确认模式 确保消息发送到交换机
+            $this->channel->confirm_select();
+            $this->channel->set_ack_handler(function (AMQPMessage $message) use ($exchange, $routingKey) {
+                $this->logger->info('ack' . $message->getBody());
+                //如果发送到交换机 记录一个日志
+                $this->logger->info('发送到成功:' . $exchange->getName() . '交换机_routingKey:' . $routingKey . ' ack',
+                    [$message]);
+
+            });
+            $this->channel->set_nack_handler(function (AMQPMessage $message) use ($exchange, $routingKey) {
+                //如果没有发送到交换机 则记录日志
+                $this->logger->info('发送到' . $exchange->getName() . '交换机_routingKey:' . $routingKey . ' nack',
+                    [$message]);
+            });
+        }
+        $outstandingMessageCount = 0;
+
+        foreach ($data as $message) {
+            $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
+
+            if ($confirm && ++$outstandingMessageCount >= $maxCount) {
+                $this->channel->wait_for_pending_acks_returns(5);//set wait time
+                $outstandingMessageCount = 0;
+            }
+        }
+
+        //如果开启了确认模式，且非异步确认 则等待3秒钟
+        if ($confirm && $outstandingMessageCount > 0) {
+            $this->channel->wait_for_pending_acks_returns(3);//set wait time
+        }
 
         return $this;
     }
@@ -102,7 +161,6 @@ class Rabbit
      */
     public function consume(string $queue, callable $callback = null): Rabbit
     {
-
         if ($callback != null && is_callable($callback)) {
             list($queue,) = $this->channel->queue_declare($queue, true, true, false, false, false);
             $this->queue2Callback[$queue] = $callback;

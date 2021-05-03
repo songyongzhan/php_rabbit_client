@@ -14,22 +14,6 @@ abstract class Exchange
 {
     /** @var string 交换机名称 */
     protected $name;
-    /** @var string
-     * 交换机路由key  可以为空 直连模式
-     * 交换机路由key topic 及 fanout 可指定对对应的key
-     */
-    protected $routingKey;
-
-    /**
-     * getRoutingKeys
-     * 获取消息路由
-     *
-     * @return String
-     */
-    public function getRoutingKey()
-    {
-        return $this->routingKey;
-    }
 
     /**
      * getName
