@@ -2,20 +2,19 @@
 
 ## 使用说明
 
-
-
 ## 使用小提示
 
 * 所有的队列都应该设置一个过期时间
 * 所有的队列设置时候，都应设置死信队列，将死信队列设置消费任务，持久化数据
-
-
 
 ## 使用说明
 
 ### 使用前的配置
 
 #### 定义服务提供者
+
+位置`app/Providers/RabbitMqProvider.php`
+
 ```php
 <?php
 namespace App\Providers;
@@ -48,6 +47,7 @@ class RabbitMqProvider extends ServiceProvider
  添加进来,这里面缺少一个`rabbitConfig`配置,如下：
  
 #### rabbitConfig配置
+可以新建一个目录，将  `config` `exchange`  统一放在一个目录下即可。
 ```php
 <?php
 
