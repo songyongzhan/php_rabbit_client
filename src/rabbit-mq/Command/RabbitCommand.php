@@ -1,9 +1,10 @@
 <?php
+
 namespace Songyz\Rabbit\Command;
 
 use Exception;
 use Illuminate\Console\Command;
-use Rabbit\Message\ResponseMessage;
+use Songyz\Rabbit\Message\ResponseMessage;
 use Songyz\Rabbit\RabbitManager;
 use Songyz\Rabbit\Service\Rabbit;
 
@@ -40,9 +41,10 @@ abstract class RabbitCommand extends Command
     {
         /** @var RabbitManager $rabbitManager */
         $rabbitManager = app(RabbitManager::class);
-        $this->rabbit  = $rabbitManager->rabbit();
 
-        $this->rabbit->consume($this->queue, [$this , 'consume']);
+        $this->rabbit = $rabbitManager->rabbit();
+
+        $this->rabbit->consume($this->queue, [$this, 'consume']);
     }
 
     public function handle()
@@ -68,8 +70,7 @@ abstract class RabbitCommand extends Command
      *
      * @param ResponseMessage $message
      * @return bool
-     *
      */
-    abstract public function consume(ResponseMessage $message) : bool;
+    abstract public function consume(ResponseMessage $message): bool;
 
 }

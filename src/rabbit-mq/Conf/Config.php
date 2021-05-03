@@ -7,13 +7,11 @@ use Songyz\Rabbit\Exception\ConfigException;
 
 abstract class Config
 {
-
     /**
      * @var array Rabbit主机信息
      *  [
-     *      ['host' => "xxx" , 'port' => 5672 , 'user' => 'user' , 'password' => 'x@GhL23CFu' , 'vhost' => '/'] ,
-     *      ['host' => "xxx" , 'port' => 5672 , 'user' => 'user' , 'password' => 'x@GhL23CFu' , 'vhost' => '/'] ,
-     *      ['host' => "xxx" , 'port' => 5672 , 'user' => 'user' , 'password' => 'x@GhL23CFu' , 'vhost' => '/'] ,
+     *      ['host' => "xxx" , 'port' => 5672 , 'user' => 'user' , 'password' => 'x@12345' , 'vhost' => '/'] ,
+     *      ['host' => "xxx" , 'port' => 5672 , 'user' => 'user' , 'password' => 'x@345677654' , 'vhost' => '/']
      * ]
      */
     protected $hosts = [];
@@ -66,14 +64,14 @@ abstract class Config
             if (empty($host['host'])) {
                 throw new ConfigException('缺少Rabbit节点的主机地址');
             }
-            if (empty($host['port'])) {
-                $host['port'] = 5672; //如果没有设置Rabbit节点端口号，设置默认端口号
-            }
             if (empty($host['user'])) {
                 throw new ConfigException('缺少Rabbit节点的登录账户');
             }
             if (empty($host['password'])) {
                 throw new ConfigException('缺少Rabbit节点的登录密码');
+            }
+            if (empty($host['port'])) {
+                $host['port'] = 5672; //如果没有设置Rabbit节点端口号，设置默认端口号
             }
             if (empty($host['vhost'])) {
                 throw new ConfigException('缺少Rabbit节点的虚拟主机');
