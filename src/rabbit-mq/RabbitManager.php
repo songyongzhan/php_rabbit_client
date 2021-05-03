@@ -44,8 +44,6 @@ final class RabbitManager
         //根据传递进来的config 获取里面相关的信息，并建立连接
         // demo
 
-
-
         $this->connection = AMQPStreamConnection::create_connection($config->getHosts(), $config->getOptions());
     }
 
@@ -77,12 +75,12 @@ final class RabbitManager
      * 获取RabbitManger对象 单例模式
      * instance
      *
-     * @param IConf $config
+     * @param Config $config
      * @param LoggerInterface $logger
      * @return RabbitManager
      * @throws Exception
      */
-    public static function getInstance(IConf $config = null, LoggerInterface $logger = null)
+    public static function getInstance(Config $config = null, LoggerInterface $logger = null)
     {
         if (self::$instance === null || !self::$instance instanceof RabbitManager) {
             self::$instance = new RabbitManager($config, $logger);

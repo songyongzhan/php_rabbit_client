@@ -2,11 +2,10 @@
 
 namespace Songyz\Rabbit\Conf;
 
-use Rabbit\Contracts\IConf;
-use Rabbit\Exception\ConfigException;
 use Songyz\Common\Library\Env;
+use Songyz\Rabbit\Exception\ConfigException;
 
-abstract class Config implements IConf
+abstract class Config
 {
 
     /**
@@ -41,6 +40,15 @@ abstract class Config implements IConf
         return $this->ssl;
     }
 
+    /**
+     *
+     * getOptions
+     * @return array
+     * @throws ConfigException
+     *
+     * @author songyongzhan <574482856@qq.com>
+     * @date 2021/5/3 09:36
+     */
     public function getOptions(): array
     {
 
