@@ -4,8 +4,10 @@ namespace Songyz\Rabbit\Service;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use phpDocumentor\Reflection\Types\Boolean;
 use Songyz\Rabbit\Exchange\Exchange;
 use Songyz\Rabbit\Message\Message;
+use Psr\Log\LoggerInterface;
 
 /**
  * rabbit
@@ -48,17 +50,44 @@ class Rabbit
 
 
     /**
-     * 发送单挑消息
+     * 发送单条消息
      * publish
      *
      * @param Message $message
      * @param Exchange $exchange
      * @param string|null $routingKey
+     * @param bool $confirm 是否开启确认模式
+     * @param bool $asynchronous 是否异步确认  如果是false 则 同步等待  true为异步
      * @return Rabbit
      */
-    public function publish(Message $message, Exchange $exchange, string $routingKey = null): Rabbit
-    {
+    public function publish(
+        Message $message,
+        Exchange $exchange,
+        string $routingKey = '',
+        bool $confirm = false,
+        bool $asynchronous = false
+    ): Rabbit {
+
+        // if ($confirm) {
+        //     //开启确认模式 确保消息发送到交换机
+        //     $this->channel->confirm_select();
+        //     if ($asynchronous) {
+        //         $this->channel->set_ack_handler(function (AMQPMessage $message) {
+        //             echo 'ack' . $message->getBody() . PHP_EOL;
+        //             //如果发送到交换机 记录一个日志
+        //         });
+        //         $this->channel->set_nack_handler(function (AMQPMessage $message) {
+        //             echo 'nack' . $message->getBody() . PHP_EOL;
+        //             //如果没有发送到交换机 则记录日志
+        //         });
+        //     }
+        // }
         $this->channel->basic_publish($message->getAMQPMessage(), $exchange->getName(), $routingKey);
+        //如果开启了确认模式，且非异步确认 则等待
+        // if ($confirm && !$asynchronous) {
+        //     $this->channel->wait_for_pending_acks_returns(5);//set wait time
+        // }
+
         return $this;
     }
 
@@ -135,7 +164,7 @@ class Rabbit
     public function start()
     {
         if (empty($this->queue2Callback)) {
-            throw new RabbitException('未什么声明队列和消费处理方法');
+            throw new RabbitException('未声明队列和消费处理方法');
         }
         foreach ($this->queue2Callback as $queue => $callback) {
             $consumerTag = $this->channel->basic_consume(
