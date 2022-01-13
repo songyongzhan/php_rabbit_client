@@ -61,6 +61,33 @@ final class RabbitManager
     }
 
     /**
+     * 获取channel
+     * getChannel
+     * @return \PhpAmqpLib\Channel\AMQPChannel
+     *
+     * @author songyongzhan <574482856@qq.com>
+     * @date 2022/1/13 19:50
+     */
+    public function getChannel()
+    {
+        return $this->connection->channel();
+    }
+
+    /**
+     * 获取连接
+     * getConnection
+     * @return mixed|AMQPStreamConnection
+     *
+     * @author songyongzhan <574482856@qq.com>
+     * @date 2022/1/13 19:49
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+
+    /**
      * rabbit
      * 获取mq实例
      */
