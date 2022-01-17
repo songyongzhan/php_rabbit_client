@@ -88,7 +88,7 @@ abstract class Config
             'read_timeout'   => 10,
             'keepalive'      => false,
             'write_timeout'  => 10,
-            'heartbeat'      => 0,
+            'heartbeat'      => 30, //心跳
         ];
 
         //证书验证
