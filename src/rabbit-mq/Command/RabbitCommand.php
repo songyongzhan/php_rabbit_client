@@ -25,8 +25,6 @@ abstract class RabbitCommand extends Command
     public function __construct()
     {
         parent::__construct();
-
-        $this->prepareRabbit();
     }
 
 
@@ -43,12 +41,20 @@ abstract class RabbitCommand extends Command
         $rabbitManager = app(RabbitManager::class);
 
         $this->rabbit = $rabbitManager->rabbit();
-
-        $this->rabbit->consume($this->queue, [$this, 'consume']);
     }
 
+    /**
+     * 使用说明
+     * handle
+     * @throws Exception
+     *
+     */
     public function handle()
     {
+        $this->prepareRabbit();
+
+        $this->rabbit->consume($this->queue, [$this, 'consume']);
+
         $this->start();
     }
 
